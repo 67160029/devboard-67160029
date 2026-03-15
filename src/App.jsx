@@ -23,14 +23,14 @@ function App() {
         style={{
           maxWidth: "900px",
           margin: "2rem auto",
+          padding: "0 1rem",
           display: "grid",
           gridTemplateColumns: "2fr 1fr",
           gap: "2rem",
         }}
       >
         <div>
-          <AddPostForm onAddPost={() => {}} />
-
+          <AddPostForm onAddPost={() => {}} /> {/* จะเชื่อมใน wk14 */}
           <PostList
             favorites={favorites}
             onToggleFavorite={handleToggleFavorite}
