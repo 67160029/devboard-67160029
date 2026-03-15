@@ -17,7 +17,6 @@ function Navbar({ favoriteCount }) {
         </p>
       </div>
 
-      {/* แสดงจำนวน favorite */}
       {favoriteCount > 0 && (
         <div
           style={{

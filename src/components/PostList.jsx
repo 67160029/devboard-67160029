@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import PostCard from "./PostCard";
-import LoadingSpinner from "./LoadingSpinner";
 import PostCount from "./PostCount";
+import LoadingSpinner from "./LoadingSpinner";
 
 function PostList({ favorites, onToggleFavorite }) {
   const [posts, setPosts] = useState([]);
@@ -9,27 +9,25 @@ function PostList({ favorites, onToggleFavorite }) {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    async function fetchPosts() {
-      try {
-        setLoading(true);
-
-        const res = await fetch("https://jsonplaceholder.typicode.com/posts");
-
-        if (!res.ok) throw new Error("โหลดโพสต์ไม่สำเร็จ");
-
-        const data = await res.json();
-
-        setPosts(data.slice(0, 20));
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+  async function fetchPosts() {
+    // Task3 Challenge 1  ระดับ 1 — ปุ่มโหลดใหม่
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await fetch("https://jsonplaceholder.typicode.com/posts");
+      if (!res.ok) throw new Error("ดึงข้อมูลไม่สำเร็จ");
+      const data = await res.json();
+      setPosts(data.slice(0, 20)); // เอาแค่ 20 รายการแรก
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-
+  }
+  // Task3 Challenge 1  ระดับ 1 — ปุ่มโหลดใหม่
+  useEffect(() => {
     fetchPosts();
-  }, []);
+  }, []); // [] = ทำครั้งเดียวตอน component mount
 
   const filtered = posts.filter((post) =>
     post.title.toLowerCase().includes(search.toLowerCase()),
@@ -37,11 +35,49 @@ function PostList({ favorites, onToggleFavorite }) {
 
   if (loading) return <LoadingSpinner />;
 
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (error)
+    return (
+      <div
+        style={{
+          padding: "1.5rem",
+          background: "#fff5f5",
+          border: "1px solid #fc8181",
+          borderRadius: "8px",
+          color: "#c53030",
+        }}
+      >
+        เกิดข้อผิดพลาด: {error}
+      </div>
+    );
 
   return (
     <div>
-      <h2>โพสต์ล่าสุด</h2>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          color: "#2d3748",
+          borderBottom: "2px solid #1e40af",
+          paddingBottom: "0.5rem",
+        }}
+      >
+        <h2 style={{ margin: 0, color: "#2d3748" }}>โพสต์ล่าสุด</h2>
+
+        <button
+          onClick={fetchPosts}
+          style={{
+            border: "1px solid #e2e8f0",
+            background: "white",
+            cursor: "pointer",
+            padding: "0.25rem 0.75rem",
+            borderRadius: "6px",
+            fontSize: "0.9rem",
+          }}
+        >
+          🔄 โหลดใหม่
+        </button>
+      </div>
 
       <PostCount count={filtered.length} />
 
@@ -52,21 +88,21 @@ function PostList({ favorites, onToggleFavorite }) {
         onChange={(e) => setSearch(e.target.value)}
         style={{
           width: "100%",
-          padding: "0.5rem",
+          padding: "0.5rem 0.75rem",
+          border: "1px solid #cbd5e0",
+          borderRadius: "6px",
+          fontSize: "1rem",
           marginBottom: "1rem",
-          borderRadius: "4px",
-          border: "1px solid #ccc",
+          boxSizing: "border-box",
         }}
       />
 
-      {/* ถ้าไม่พบโพสต์ */}
       {filtered.length === 0 && (
-        <p style={{ color: "#718096", textAlign: "center", padding: "1rem" }}>
+        <p style={{ color: "#718096", textAlign: "center", padding: "2rem" }}>
           ไม่พบโพสต์ที่ค้นหา
         </p>
       )}
 
-      {/* แสดงโพสต์ */}
       {filtered.map((post) => (
         <PostCard
           key={post.id}

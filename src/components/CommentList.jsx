@@ -4,32 +4,51 @@ import LoadingSpinner from "./LoadingSpinner";
 function CommentList({ postId }) {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchComments() {
-      const res = await fetch(
-        `https://jsonplaceholder.typicode.com/posts/${postId}/comments`,
-      );
-
-      const data = await res.json();
-
-      setComments(data);
-      setLoading(false);
+      try {
+        setLoading(true);
+        const res = await fetch(
+          `https://jsonplaceholder.typicode.com/posts/${postId}/comments`,
+        );
+        if (!res.ok) throw new Error("ดึงความคิดเห็นไม่สำเร็จ");
+        const data = await res.json();
+        setComments(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
     }
-
     fetchComments();
-  }, [postId]);
+  }, [postId]); // fetch ใหม่ทุกครั้งที่ postId เปลี่ยน
 
-  if (loading) return <LoadingSpinner />;
+  if (loading)
+    return <p style={{ color: "#718096" }}>กำลังโหลดความคิดเห็น...</p>;
+  if (error) return <p style={{ color: "#c53030" }}>{error}</p>;
 
   return (
-    <div>
-      <strong>ความคิดเห็น</strong>
-
-      {comments.map((c) => (
-        <div key={c.id}>
-          <b>{c.name}</b>
-          <p>{c.body}</p>
+    <div style={{ marginTop: "0.75rem" }}>
+      <strong style={{ color: "#4a5568" }}>
+        ความคิดเห็น ({comments.length})
+      </strong>
+      {comments.map((comment) => (
+        <div
+          key={comment.id}
+          style={{
+            background: "#f7fafc",
+            borderRadius: "6px",
+            padding: "0.5rem 0.75rem",
+            marginTop: "0.5rem",
+            fontSize: "0.85rem",
+          }}
+        >
+          <div style={{ fontWeight: "bold", color: "#2d3748" }}>
+            {comment.name}
+          </div>
+          <div style={{ color: "#718096" }}>{comment.body}</div>
         </div>
       ))}
     </div>
