@@ -1,22 +1,10 @@
 import { useState } from "react";
 import Navbar from "./components/Navbar";
 import PostList from "./components/PostList";
+import UserList from "./components/UserList";
 import AddPostForm from "./components/AddPostForm";
-import UserCard from "./components/UserCard";
-
-const INITIAL_POSTS = [
-  { id: 1, title: "React คืออะไร?", body: "React เป็น library UI" },
-  { id: 2, title: "JSX คืออะไร?", body: "เขียน HTML ใน JS" },
-  { id: 3, title: "Props คืออะไร?", body: "ส่งข้อมูลระหว่าง component" },
-];
-
-const USERS = [
-  { id: 1, name: "สมชาย", email: "somchai@dev.com" },
-  { id: 2, name: "สมหญิง", email: "somying@dev.com" },
-];
 
 function App() {
-  const [posts, setPosts] = useState(INITIAL_POSTS);
   const [favorites, setFavorites] = useState([]);
 
   function handleToggleFavorite(postId) {
@@ -27,33 +15,32 @@ function App() {
     );
   }
 
-  function handleAddPost({ title, body }) {
-    const newPost = {
-      id: Date.now(),
-      title,
-      body,
-    };
-
-    setPosts((prev) => [newPost, ...prev]);
-  }
-
   return (
     <div>
       <Navbar favoriteCount={favorites.length} />
 
-      <AddPostForm onAddPost={handleAddPost} />
+      <div
+        style={{
+          maxWidth: "900px",
+          margin: "2rem auto",
+          display: "grid",
+          gridTemplateColumns: "2fr 1fr",
+          gap: "2rem",
+        }}
+      >
+        <div>
+          <AddPostForm onAddPost={() => {}} />
 
-      <PostList
-        posts={posts}
-        favorites={favorites}
-        onToggleFavorite={handleToggleFavorite}
-      />
+          <PostList
+            favorites={favorites}
+            onToggleFavorite={handleToggleFavorite}
+          />
+        </div>
 
-      <h2>สมาชิก</h2>
-
-      {USERS.map((user) => (
-        <UserCard key={user.id} name={user.name} email={user.email} />
-      ))}
+        <div>
+          <UserList />
+        </div>
+      </div>
     </div>
   );
 }
